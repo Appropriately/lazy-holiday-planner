@@ -2,6 +2,7 @@ from .services import GooglePlaceService
 from django.views.generic import DetailView, CreateView
 from django.shortcuts import get_object_or_404
 from .models import Trip, Visit
+from .forms import TripAddForm
 
 
 class TripDetailView(DetailView):
@@ -18,8 +19,7 @@ class TripDetailView(DetailView):
 
 
 class TripAddView(CreateView):
-    model = Visit
-    fields = ['arrival_time', 'leaving_time', 'location']
+    form_class = TripAddForm
     template_name = 'visit/new.html'
 
     def dispatch(self, request, *args, **kwargs):

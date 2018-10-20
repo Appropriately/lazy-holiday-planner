@@ -1,7 +1,7 @@
 from .services import GooglePlaceService
 from django.views.generic import DetailView, CreateView
 from django.shortcuts import get_object_or_404
-from .models import Trip, VisitForm, Visit
+from .models import Trip, Visit
 
 
 class TripDetailView(DetailView):

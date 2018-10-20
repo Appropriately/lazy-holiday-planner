@@ -6,6 +6,13 @@
 
 {% if user.is_authenticated %}
 
+<div class="hero">
+    <img class="hero-image" src="/static/images/city.jpg">
+    <div class="hero-centered-text">
+        <h1><i class="fas fa-plane-departure"></i> Your trips</h1>
+    </div>
+</div>
+
 {% else %}
 
 <div class="hero">
@@ -26,12 +33,34 @@
 
 {% if user.is_authenticated %}
 
-<h2>Ah, I see you are logged in</h2>
+{% if user_trips == None %}
+<h3 class="my-5">You need to book some trips first! :(</h3>
+{% else %}
+{% for trip in user_trips %}
+<div class="card my-3">
+    <a href="/trip/{{trip.unique_id}}" class="card-clickable"></a>
+    <h5 class="card-header">{{trip.title}}</h5>
+    <div class="card-body">
+        <h6 class="card-subtitle mb-2 text-muted">{{trip.attendees}}</h6>
+        <p class="card-text">{{trip.notes}}</p>
+        <p class="card-text">XX/XX/XXXX - XX/XX/XXXX</p>
+    </div>
+</div>
+{% endfor %}
+
+{% endif %}
+
+<div class="btn-group">
+    <a href="/new" class="btn btn-primary"><i class="fas fa-plus"></i> Start a new trip</a>
+</div>
 
 {% else %}
 
 <h2>What we do</h2>
-<p class="lead">Do you have more money than sense? Do you hate the fun of planning your own holiday? Do you want someone else to basically organise the whole thing for you? Well actually to be more specific, we have integrated a number of APIs to find you a good deal on an entire holiday. Simply send us some information on your ideal trip and we'll sort you out.</p>
+<p class="lead">Do you have more money than sense? Do you hate the fun of planning your own holiday? Do you want
+    someone else to basically organise the whole thing for you? Well actually to be more specific, we have integrated a
+    number of APIs to find you a good deal on an entire holiday. Simply send us some information on your ideal trip and
+    we'll sort you out.</p>
 <hr>
 <h2>How we do</h2>
 <p class="lead">We use the following services and APIs to find you a decent deal:</p>

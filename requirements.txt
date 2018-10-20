@@ -1,3 +1,4 @@
 django-crispy-forms
 skyscanner
 Django
+django-seed

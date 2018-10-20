@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'planner',
     'itinerary',
     'crispy_forms',
-    'accounts'
+    'accounts',
 ]
 
 MIDDLEWARE = [

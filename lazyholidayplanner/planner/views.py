@@ -5,11 +5,29 @@ from django.http import HttpResponse
 from django.shortcuts import render, render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.db.models import Q
+
+from django.contrib.auth.models import User
+from itinerary.models import Trip
+
 
 # Create your views here.
 
 def index(request):
-    return render(request, 'planner/index.html')
+    # Current user's details
+    current_user = request.user
+
+    if current_user.is_authenticated is False:
+        return render(request, 'planner/index.html')
+
+    user_trips = Trip.objects.filter(Q(creator=current_user) | Q(members=current_user)).distinct()
+    if not user_trips.exists():
+        user_trips = None
+    print(user_trips)
+    
+    return render(request, 'planner/index.html',  {
+        'user_trips': user_trips,
+    })
 
 def new(request):
     return render(request, 'planner/new.html')

@@ -124,5 +124,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    ("css", "/css"),
+    os.path.join(BASE_DIR, 'static'),
 ]

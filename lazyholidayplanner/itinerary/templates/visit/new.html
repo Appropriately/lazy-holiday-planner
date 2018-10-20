@@ -9,10 +9,8 @@
 <form method="post" class="py-4">
     {% csrf_token %}
     {{ form|crispy }}
-    <div class="btn-group">
-        <input type="submit" value="Add" class="btn btn-primary" />
-        <a href="/trip/{{slug}}" class="btn btn-secondary">Cancel<a/>
-    </div>
+    <input type="submit" value="Add" class="btn btn-primary" />
+    <a href="/trip/{{slug}}" class="btn btn-secondary ml-2">Cancel</a>
 </form>
 {% else %}
 

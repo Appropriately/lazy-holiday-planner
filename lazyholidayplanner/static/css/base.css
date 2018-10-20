@@ -14,7 +14,6 @@ body {
 
 #padded-content {
     min-height: 300px;
-    padding: 30px;
 }
 
 footer {
@@ -50,4 +49,14 @@ form {
 
 .hero-centered-text h3 {
     text-shadow: 1px 1px black;
+}
+
+.provider {
+    width: 400px;
+    height: auto;
+    padding: 30px;
+}
+
+.providers {
+    text-align: center;
 }

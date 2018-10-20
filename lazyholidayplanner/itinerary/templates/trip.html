@@ -1,35 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{object.title}} — Lazy Holiday Planner</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
-</head>
-<body>
+{% extends 'base.html' %}
 
-<div class="container-fluid">
+{% block content %}
   <div class="row">
     <div class="col">
       <h1>{{object.title}}</h1>
       <div>
-        {% if object.members == 1 %}
-          {{ object.members.0 }} is going
-        {% elif object.members == 2 %}
-          {{ object.members.0 }} and {{ object.members.1 }} are going
-        {% else %}
-          {% with num_of_others=object.members.length|add:"-2" %}
-            {{ object.members.0 }}, {{ object.members.1 }} and {{ num_of_others }} other{% if num_of_others==1 %} is{% else %}s are{% endif %} going
+        {% if object.members.all|length == 1 %}
+          {{ object.members.all.0 }} is going
+        {% elif object.members.all|length == 2 %}
+          {{ object.members.all.0 }} and {{ object.members.all.1 }} are going
+        {% elif object.members.all|length > 2 %}
+          {% with num_of_others=object.members.all|length|add:"-2" %}
+            {{ object.members.all.0 }}, {{ object.members.all.1 }} and {{ num_of_others }} other{% if num_of_others == 1 %} is{% else %}s are{% endif %} going
           {% endwith %}
         {% endif %}
       </div>
     </div>
   </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-
-</body>
-</html>
+{% endblock %}

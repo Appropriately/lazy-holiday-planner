@@ -1,11 +1,18 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
 
 class Trip(models.Model):
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="trip_creator")
+    creator = models.ForeignKey(User, on_delete=models.CASCADE,
+                                related_name="trip_creator")
     members = models.ManyToManyField(User)
     title = models.CharField(max_length=50)
+    unique_id = models.UUIDField(default=uuid.uuid4, editable=False,
+                                 unique=True)
+
+    def __str__(self):
+        return self.title
 
 
 class ItineraryItem(models.Model):

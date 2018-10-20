@@ -13,7 +13,6 @@ from django.contrib.auth.decorators import login_required
 from skyscanner.skyscanner import Flights
 
 # Create your views here.
-
 def index(request):
     # Current user's details
     current_user = request.user

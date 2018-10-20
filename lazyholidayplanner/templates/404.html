@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block hero %}
+<div class="hero">
+    <img class="hero-image" src="{% static 'images/wasteland.jpg' %}">
+    <div class="hero-centered-text">
+        <h1>Error 404</h1>
+        <h3>¯\_(ツ)_/¯</h3>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+<h2 class="m-5" style="text-align:center;">Can't find that, sorry pal</h2>
+{% endblock %}

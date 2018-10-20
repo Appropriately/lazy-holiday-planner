@@ -1,20 +1,32 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block content %}
-  <div class="row">
+{% block hero %}
+<div class="hero">
+  <img class="hero-image" src="{{ hero_img_url }}">
+  <div class="row hero-centered-text">
     <div class="col">
       <h1>{{object.title}}</h1>
       <div>
-        {% if object.members.all|length == 1 %}
-          {{ object.members.all.0 }} is going
-        {% elif object.members.all|length == 2 %}
-          {{ object.members.all.0 }} and {{ object.members.all.1 }} are going
-        {% elif object.members.all|length > 2 %}
-          {% with num_of_others=object.members.all|length|add:"-2" %}
-            {{ object.members.all.0 }}, {{ object.members.all.1 }} and {{ num_of_others }} other{% if num_of_others == 1 %} is{% else %}s are{% endif %} going
-          {% endwith %}
-        {% endif %}
+        {{object.attendees}}
       </div>
     </div>
   </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="my-4">
+  {% for schedule_item in schedule_items %}
+  <div class="schedule-item">
+    <h4>{{schedule_item.location}}</h4>
+    <h5>{{schedule_item.arrival_time}} - {{schedule_item.leaving_time}}</h5>
+    <h5>Added bt {{schedule_item.created_by.username}}</h5>
+  </div>
+  {% endfor %}
+</div>
+
+
+
+<a href="/trip/{{object.unique_id}}/add" class="btn btn-primary">Add to schedule</a>
 {% endblock %}

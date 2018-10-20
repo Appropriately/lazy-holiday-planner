@@ -8,13 +8,26 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from itinerary.models import Trip, ItineraryItem, Flight
-
+from django.db.models import Q
 from skyscanner.skyscanner import Flights
 
 # Create your views here.
 
 def index(request):
-    return render(request, 'planner/index.html')
+    # Current user's details
+    current_user = request.user
+
+    if current_user.is_authenticated is False:
+        return render(request, 'planner/index.html')
+
+    user_trips = Trip.objects.filter(Q(creator=current_user) | Q(members=current_user)).distinct()
+    if not user_trips.exists():
+        user_trips = None
+    print(user_trips)
+    
+    return render(request, 'planner/index.html',  {
+        'user_trips': user_trips,
+    })
 
 def new(request):
     return render(request, 'planner/new.html')
@@ -36,7 +49,7 @@ def typeform_result(request):
     trip['start_date'] = query_answers[2]['date']
     trip['end_date'] = query_answers[3]['date']
     trip['party_size'] = query_answers[4]['number']
-    trip['class'] = parse_budget(query_answers[52]['choice']['label'])
+    trip['class'] = parse_budget(query_answers[5]['choice']['label'])
 
     flights_service = get_flights_service()
     origin_locations = get_location_results(flights_service, trip['origin_location'])

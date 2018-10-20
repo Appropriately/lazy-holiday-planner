@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from itinerary.models import Trip, ItineraryItem, Flight
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 from skyscanner.skyscanner import Flights
 
 # Create your views here.
@@ -29,6 +30,7 @@ def index(request):
         'user_trips': user_trips,
     })
 
+@login_required
 def new(request):
     return render(request, 'planner/new.html')
 

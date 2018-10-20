@@ -16,7 +16,6 @@ from skyscanner.skyscanner import Flights
 # Create your views here.
 
 def index(request):
-<<<<<<< HEAD
     # Current user's details
     current_user = request.user
 
@@ -31,29 +30,6 @@ def index(request):
     return render(request, 'planner/index.html',  {
         'user_trips': user_trips,
     })
-=======
-    # read keys in from file, and strip newline characters
-    # 0 is flight api key
-    # 1 is flight app id
-    # 2 is hotel api key
-    with open('keys') as f:
-        keys = f.readlines()
-    
-    keys = [key.strip() for key in keys]
-
-    flights_service = Flights(keys[0])
-    # places = flights_service.make_request('http://partners.api.skyscanner.net/apiservices/autosuggest/v1.0/UK/GBP/en-GB?query=manc&apiKey={keys[0]}')
-    # return HttpResponse(places)
-    
-    # result = flights_service.get_result(
-    #     country='UK',
-    #     currency='GBP',
-    #     local='en-GB',
-    #     originplace=''
-    # )
-
-    return render(request, 'planner/index.html')
->>>>>>> 03a15bfdfa11bdb010db308aaa60c907427fc9dd
 
 def new(request):
     return render(request, 'planner/new.html')

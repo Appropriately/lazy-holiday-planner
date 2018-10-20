@@ -24,7 +24,7 @@ def index(request):
     if not user_trips.exists():
         user_trips = None
     print(user_trips)
-    
+
     return render(request, 'planner/index.html',  {
         'user_trips': user_trips,
     })
@@ -43,6 +43,7 @@ def typeform_result(request):
     data = json.loads(jsondata)
     query_answers = data['form_response']['answers']
     username = data['form_response']['hidden']['username']
+    print(data)
 
     trip = {}
     trip['origin_location'] = query_answers[0]['text']
@@ -59,41 +60,44 @@ def typeform_result(request):
     trip['destination_location'] = get_first_location(destination_locations)
 
     if not trip['origin_location']:
-        return HttpResponse(status=500, msg='Origin location not valid')
+        return HttpResponse(status=500, content="Origin location not valid")
 
     if not trip['destination_location']:
-        return HttpResponse(status=500, msg="Destination location not valid")
+        return HttpResponse(status=500, content="Destination location not valid")
 
     if not are_dates_valid(trip['start_date'], trip['end_date']):
-        return HttpResponse(status=500, msg="Dates are invalid")
+        return HttpResponse(status=500, content="Dates are invalid")
 
     if trip['party_size'] <= 0:
-        return HttpResponse(status=500, msg="Party size must be greater than 0")
+        return HttpResponse(status=500, content="Party size must be greater than 0")
 
     if not trip['class']:
-        return HttpResponse(status=500, msg="Invalid flight class")    
+        return HttpResponse(status=500, content="Invalid flight class")    
     
-    try:
-        user = User.objects.get(username)
-    except ObjectDoesNotExist:
-        return HttpResponse(status=500, msg="Invalid username")
-    except:
-        return HttpResponse(status=500, msg="Unknown error occurred")
-
     try:    
+        # Get the user
+        user = User.objects.get_by_natural_key(username)
+        
         # Create the trip
-        new_trip = Trip.objects.create(creator=user, title='New Trip ' + trip['start_date'])
-        new_trip.members.set(user)
+        print('Gets to create trip')
+        trip_title = "New Trip " + trip['start_date']
+        destination_name = destination_locations[0]['PlaceName']
+        new_trip = Trip.objects.create(creator=user, title=trip_title, destination=destination_name)
+        print('initial create success')
+        new_trip.members.add(user)
+        print('added members')
         new_trip.save()
 
         # Create the flight
-        flight = get_flight(flights_service, trip)
+        # flight = get_flight(flights_service, trip)
+    except ObjectDoesNotExist:
+        return HttpResponse(status=200, content="Invalid username")
     except:
-        return HttpResponse(status=500, msg="Unexpected error occured")
-
+        print('error saving trip')
+        return HttpResponse(status=500, content="Unexpected error occured")
 
     print(data)
-    return HttpResponse(status=200, msg="Trip added")
+    return HttpResponse(status=200, content="Trip added")
 
 def get_keys():
     # read keys in from file, and strip newline characters

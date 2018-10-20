@@ -5,7 +5,7 @@
 {% block content %}
 
 {% if user.is_authenticated %}
-<h3>Add an event to your schedule</h3>
+<h2>Add an event to your schedule</h2>
 <form method="post" class="py-4">
     {% csrf_token %}
     {{ form|crispy }}

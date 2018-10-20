@@ -1,0 +1,23 @@
+
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<h3>Add an event to your schedule</h3>
+<form method="post" class="py-4">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <div class="btn-group">
+        <input type="submit" value="Add" class="btn btn-primary" />
+        <a href="/trip/{{slug}}" class="btn btn-secondary">Cancel<a/>
+    </div>
+</form>
+{% else %}
+
+<h2>But... you can't do that without logging in!</h2>
+
+{% endif %}
+
+{% endblock %}

@@ -1,5 +1,8 @@
-import uuid
+import uuid, datetime
+
+from django import forms
 from django.db import models
+from django.forms import ModelForm
 from django.contrib.auth.models import User
 
 
@@ -29,11 +32,45 @@ class ItineraryItem(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
+    def get_absolute_url(self):
+        return ".."
+
 
 class Flight(ItineraryItem):
     time = models.DateTimeField()
     departs_from = models.CharField(max_length=100)
     destination = models.CharField(max_length=100)
+
+class Visit(ItineraryItem):
+    arrival_time = models.DateTimeField()
+    leaving_time = models.DateTimeField() 
+    location = models.CharField(max_length=200)
+
+class VisitForm(forms.Form):
+    arrival_time = forms.TimeField(initial=datetime.datetime.now().time(),
+                                   widget=forms.TimeInput(attrs={'type':'time'}))
+    arrival_date = forms.DateField(initial=datetime.datetime.now(),
+                                   widget=forms.DateInput(format=('%d-%m-%Y'), 
+                                    attrs={'type':'date'}))
+    leaving_time = forms.TimeField(initial=datetime.datetime.now().time(),
+                                   widget=forms.TimeInput(attrs={'type':'time'})) 
+    leaving_date = forms.DateField(initial=datetime.datetime.now(),
+                                   widget=forms.DateInput(format=('%d-%m-%Y'), 
+                                    attrs={'type':'date'}))
+    location = forms.CharField(max_length=200,
+                                help_text='Should be an address')
+
+    def clean(self):
+        cleaned_data = super(VisitForm, self).clean()
+        arrival_time = f"{cleaned_data.get('arrival_time')} {cleaned_data.get('arrival_date')}"
+        leaving_time = f"{cleaned_data.get('leaving_time')} {cleaned_data.get('leaving_date')}"
+        location = cleaned_data.get('location')
+        if not arrival_time or not leaving_time or not location:
+            raise forms.ValidationError('All fields are required')
+    
+    class Meta:
+        model = Visit
+        widgets = {}
 
 
 class Note(ItineraryItem):

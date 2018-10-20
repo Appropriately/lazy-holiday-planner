@@ -1,0 +1,12 @@
+.navbar {
+    background-color: skyblue
+}
+
+a {
+    color: white;
+}
+
+li.nav-item a:hover {
+    background-color: skyblue;
+    color: #23527c;
+}

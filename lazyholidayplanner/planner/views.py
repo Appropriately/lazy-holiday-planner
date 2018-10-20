@@ -2,11 +2,15 @@ import copy, json, datetime
 
 from django.utils import timezone
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 # Create your views here.
+
+def index(request):
+    return render_to_response('index.html')
+
 def new(request):
     return render(request, 'new.html')
 

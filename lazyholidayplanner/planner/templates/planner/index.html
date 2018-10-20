@@ -1,11 +1,37 @@
 {% extends "base.html" %}
 
-{% block content %}
+
+<!-- Hero (no padding top) -->
+{% block hero %}
+
 {% if user.is_authenticated %}
-<h2>Ah, I see you are logged in</h2>
+
 {% else %}
-<h2>Login nerd</h2>
+
+<div class="hero">
+    <img class="hero-image" src="/static/images/manchester.jpeg">
+    <div class="hero-centered-text">
+        <h1><i class="fas fa-plane-departure"></i> Lazy Holiday Planner</h1>
+        <h3>The lazy bastard's holiday planner</h3>
+    </div>
+</div>
+
 {% endif %}
 
 {% endblock %}
 
+
+<!-- Main content goes here -->
+{% block content %}
+
+{% if user.is_authenticated %}
+
+<h2>Ah, I see you are logged in</h2>
+
+{% else %}
+
+<h2>Login nerd</h2>
+
+{% endif %}
+
+{% endblock %}

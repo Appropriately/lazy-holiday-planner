@@ -18,7 +18,7 @@ Webhook for handling information submitted to typeform. The url is '.../api/type
 def typeform_result(request):
     jsondata = request.body
     data = json.loads(jsondata)
-    meta = copy.copy(request.META)
+    # meta = copy.copy(request.META)
     print(data)
 
     """

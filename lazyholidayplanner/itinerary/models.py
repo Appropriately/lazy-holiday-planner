@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class Trip(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="trip_creator")
     members = models.ManyToManyField(User)
     title = models.CharField(max_length=50)
 
@@ -20,4 +20,4 @@ class Flight(ItineraryItem):
 
 
 class Note(ItineraryItem):
-    text = models.CharField(max_length=models.Max)
+    text = models.CharField(max_length=500)

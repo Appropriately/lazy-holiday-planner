@@ -31,6 +31,3 @@ db.sqlite3
 
 # IDE files
 .idea/
-
-# API keys file
-keys

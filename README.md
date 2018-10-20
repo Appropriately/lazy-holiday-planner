@@ -20,3 +20,16 @@ sudo ngrok http 8000
 ```
 
 Then, you will need to modify the domain on the typeform website so that it can properly reach the webhook. I'd recommend using typeform's built in method for checking that the webhook properly works.
+
+To start from a clean slate with the database, run the following command:
+
+```bash
+bash scripts/reset-db
+```
+
+If you aren't going to run the ```scripts/dev-run``` after, ensure that you run the following commands so that the migrations are made and applied before running:
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```

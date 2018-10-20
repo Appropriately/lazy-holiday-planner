@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Delete .pyc
+find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+find . -path "*/migrations/*.pyc"  -delete
+
+# Delete the database
+rm lazyholidayplanner/db.sqlite3
+

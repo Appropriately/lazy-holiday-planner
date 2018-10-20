@@ -30,6 +30,8 @@ class Trip(models.Model):
 class ItineraryItem(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    arrival_time = models.DateTimeField()
+    leaving_time = models.DateTimeField()
 
     def get_absolute_url(self):
         return ".."
@@ -42,8 +44,6 @@ class Flight(ItineraryItem):
 
 
 class Visit(ItineraryItem):
-    arrival_time = models.DateTimeField()
-    leaving_time = models.DateTimeField()
     location = models.CharField(max_length=200)
 
 

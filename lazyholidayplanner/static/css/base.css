@@ -70,3 +70,9 @@ form {
     top: 0; left: 0;
     height: 100%; width: 100%;
 }
+
+.schedule-item {
+    margin: 0;
+    padding: 10px;
+    border-left: 2px solid black;
+}

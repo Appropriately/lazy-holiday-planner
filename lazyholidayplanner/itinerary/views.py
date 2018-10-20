@@ -13,6 +13,7 @@ class TripDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['hero_img_url'] = GooglePlaceService.get_photo(
             context['object'].destination)
+        context['schedule_items'] = Visit.objects.filter(trip=context['object'])
         return context
 
 

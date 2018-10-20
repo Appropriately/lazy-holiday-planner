@@ -13,5 +13,20 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block content %}
+<div class="my-4">
+  {% for schedule_item in schedule_items %}
+  <div class="schedule-item">
+    <h4>{{schedule_item.location}}</h4>
+    <h5>{{schedule_item.arrival_time}} - {{schedule_item.leaving_time}}</h5>
+    <h5>Added bt {{schedule_item.created_by.username}}</h5>
+  </div>
+  {% endfor %}
+</div>
+
+
+
 <a href="/trip/{{object.unique_id}}/add" class="btn btn-primary">Add to schedule</a>
 {% endblock %}

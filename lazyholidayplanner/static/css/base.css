@@ -29,11 +29,15 @@ form {
     position: relative;
     text-align: center;
     color: white;
+    background-color: black;
 }
 
 .hero-image {
-    width: 100%;
-    height: auto;
+    min-width: 100%;
+    width: auto;
+    height: 300px;
+    object-fit: cover;
+    opacity: 0.5;
 }
 
 .hero-centered-text {

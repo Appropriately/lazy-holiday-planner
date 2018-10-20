@@ -1,4 +1,5 @@
 django-crispy-forms
 skyscanner
 Django
-django-seed
+requests
+googlemaps

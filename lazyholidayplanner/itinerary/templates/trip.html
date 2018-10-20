@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block content %}
-  <div class="row">
+{% block hero %}
+<div class="hero">
+  <img class="hero-image" src="{{ hero_img_url }}">
+  <div class="row hero-centered-text">
     <div class="col">
       <h1>{{object.title}}</h1>
       <div>
@@ -17,6 +20,6 @@
       </div>
     </div>
   </div>
-
-  <a href="/trip/{{object.unique_id}}/add" class="btn btn-primary">Add to schedule</a>
+</div>
+<a href="/trip/{{object.unique_id}}/add" class="btn btn-primary">Add to schedule</a>
 {% endblock %}

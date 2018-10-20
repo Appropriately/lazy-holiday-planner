@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 
 <!-- Hero (no padding top) -->
@@ -16,7 +17,7 @@
 {% else %}
 
 <div class="hero">
-    <img class="hero-image" src="/static/images/manchester.jpeg">
+    <img class="hero-image" src="{% static 'images/manchester.jpeg' %}">
     <div class="hero-centered-text">
         <h1><i class="fas fa-plane-departure"></i> Lazy Holiday Planner</h1>
         <h3>The lazy bastard's holiday planner</h3>

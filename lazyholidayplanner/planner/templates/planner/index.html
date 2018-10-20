@@ -44,7 +44,7 @@
     <div class="card-body">
         <h6 class="card-subtitle mb-2 text-muted">{{trip.attendees}}</h6>
         <p class="card-text">{{trip.notes}}</p>
-        <p class="card-text">XX/XX/XXXX - XX/XX/XXXX</p>
+        <p class="card-text">{{trip.get_start_date}} - {{trip.get_end_date}}</p>
     </div>
 </div>
 {% endfor %}

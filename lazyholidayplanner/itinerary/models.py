@@ -26,6 +26,20 @@ class Trip(models.Model):
         else:
             return f"You and {number_of_members} mates are going"
 
+    def get_initial_flight(self):
+        flights = Flight.objects.filter(trip=self).order_by('leaving_time')
+        return flights.first()
+
+    def get_return_flight(self):
+        flights = Flight.objects.filter(trip=self).order_by('-arrival_time')
+        return flights.first()
+
+    def get_start_date(self):
+        return self.get_initial_flight().leaving_time
+
+    def get_end_date(self):
+        return self.get_return_flight().arrival_time
+
 
 class ItineraryItem(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)

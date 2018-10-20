@@ -28,17 +28,23 @@ class Trip(models.Model):
 
     def get_initial_flight(self):
         flights = Flight.objects.filter(trip=self).order_by('leaving_time')
-        return flights.first()
+        if flights is None:
+            return flights.first()
+        else:
+            return None
 
     def get_return_flight(self):
         flights = Flight.objects.filter(trip=self).order_by('-arrival_time')
-        return flights.first()
+        if flights is None:
+            return flights.first()
+        else:
+            return None
 
     def get_start_date(self):
-        return self.get_initial_flight().leaving_time
+        return  self.get_initial_flight().leaving_time if self.get_initial_flight() is not None else "NO FLIGHT DATA"
 
     def get_end_date(self):
-        return self.get_return_flight().arrival_time
+        return self.get_return_flight().leaving_time if self.get_return_flight() is not None else "NO FLIGHT DATA"
 
 
 class ItineraryItem(models.Model):
@@ -58,7 +64,8 @@ class Flight(ItineraryItem):
 
 
 class Visit(ItineraryItem):
-    location = models.CharField(max_length=200)
+    location = models.CharField(max_length=100)
+    full_address = models.CharField(max_length=200)
 
 
 class Note(ItineraryItem):

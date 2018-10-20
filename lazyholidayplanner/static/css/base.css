@@ -1,14 +1,5 @@
-.navbar {
-    background-color: skyblue
-}
-
 a {
     color: white;
-}
-
-li.nav-item a:hover {
-    background-color: skyblue;
-    color: #23527c;
 }
 
 body {
@@ -24,4 +15,9 @@ body {
 
 footer {
     color: #333333;
+}
+
+form {
+    padding-top: 40px;
+    padding-bottom: 40px;
 }

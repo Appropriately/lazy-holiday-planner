@@ -23,7 +23,6 @@ def index(request):
     user_trips = Trip.objects.filter(Q(creator=current_user) | Q(members=current_user)).distinct()
     if not user_trips.exists():
         user_trips = None
-    print(user_trips)
 
     return render(request, 'planner/index.html',  {
         'user_trips': user_trips,
@@ -58,6 +57,8 @@ def typeform_result(request):
     trip['origin_location'] = get_first_location(origin_locations)
     destination_locations = get_location_results(flights_service, trip['destination_location'])
     trip['destination_location'] = get_first_location(destination_locations)
+    
+    print(trip)
 
     if not trip['origin_location']:
         return HttpResponse(status=500, content="Origin location not valid")
@@ -74,27 +75,21 @@ def typeform_result(request):
     if not trip['class']:
         return HttpResponse(status=500, content="Invalid flight class")    
     
-    try:    
-        # Get the user
-        user = User.objects.get_by_natural_key(username)
-        
-        # Create the trip
-        print('Gets to create trip')
-        trip_title = "New Trip " + trip['start_date']
-        destination_name = destination_locations[0]['PlaceName']
-        new_trip = Trip.objects.create(creator=user, title=trip_title, destination=destination_name)
-        print('initial create success')
-        new_trip.members.add(user)
-        print('added members')
-        new_trip.save()
+    # Get the user
+    user = User.objects.get_by_natural_key(username)
+    
+    # Create the trip
+    print('Gets to create trip')
+    destination_name = destination_locations['Places'][0]['PlaceName']
+    trip_title = f"{username}'s trip to {destination_name}"
+    new_trip = Trip.objects.create(creator=user, title=trip_title, destination=destination_name)
+    print('initial create success')
+    new_trip.members.add(user)
+    print('added members')
+    new_trip.save()
 
-        # Create the flight
-        # flight = get_flight(flights_service, trip)
-    except ObjectDoesNotExist:
-        return HttpResponse(status=200, content="Invalid username")
-    except:
-        print('error saving trip')
-        return HttpResponse(status=500, content="Unexpected error occured")
+    # Create the flight
+    # flight = get_flight(flights_service, trip)#
 
     print(data)
     return HttpResponse(status=200, content="Trip added")
@@ -168,18 +163,3 @@ def get_flight(flights_service, trip, country='UK', currency='GBP', locale='en-G
 def poll_results(flights_service, session_key, sort_type='price', sort_order='asc'):
     flights_response = flights_service.make_request(f'http://partners.api.skyscanner.net/apiservices/pricing/uk1/v1.0/{session_key}?stops=0&sortType={sort_type}&sortOrder={sort_order}')
     return json.loads(flights_response.text)
-
-def test():
-    keys = get_keys()
-    flights_service = Flights(keys[0])
-
-    trip = {}
-    trip['origin_location'] = get_first_location(get_location_results(flights_service, 'manchester'))
-    trip['destination_location'] = get_first_location(get_location_results(flights_service, 'barcelona'))
-    trip['start_date'] = '2018-10-25'
-    trip['end_date'] = '2018-11-03'
-    trip['party_size'] = '3'
-    trip['class'] = parse_budget('No money')
-
-    flight = get_flight(flights_service, trip)
-    return flight

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<h2>But... you are already logged in?</h2>
+{% else %}
+
+<form method="post" class="py-4" action="{% url 'login' %}">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <div>
+        <input type="submit" value="login" class="btn btn-primary" />
+        <input type="hidden" name="next" value="{{ next }}" />
+    </div>
+</form>
+
+{# Assumes you setup the password_reset view in your URLconf #}
+</br>
+<p><a style="color:black !important" href="{% url 'password_reset' %}">Lost password?</a></p>
+
+
+{% endif %}
+
+{% endblock %}

@@ -31,10 +31,10 @@ def index(request):
     #     originplace=''
     # )
 
-    return render_to_response('index.html')
+    return render(request, 'planner/index.html')
 
 def new(request):
-    return render(request, 'new.html')
+    return render(request, 'planner/new.html')
 
 """
 Webhook for handling information submitted to typeform. The url is '.../api/typeform'

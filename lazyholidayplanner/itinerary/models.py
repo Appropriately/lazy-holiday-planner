@@ -14,6 +14,8 @@ class Trip(models.Model):
     unique_id = models.UUIDField(default=uuid.uuid4, editable=False,
                                  unique=True)
     destination = models.CharField(max_length=100)
+    party_size = models.IntegerField()
+    price = models.DecimalField(decimal_places=2)
 
     def __str__(self):
         return self.title

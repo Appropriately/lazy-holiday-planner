@@ -77,19 +77,21 @@ def typeform_result(request):
     
     # Get the user
     user = User.objects.get_by_natural_key(username)
+
+    # Get the flights and price
+    flight = get_flight(flights_service, trip)
+    price = flight['Itineraries'][0]['PricingOptions']['Price']
     
     # Create the trip
     print('Gets to create trip')
     destination_name = destination_locations['Places'][0]['PlaceName']
     trip_title = f"{username}'s trip to {destination_name}"
-    new_trip = Trip.objects.create(creator=user, title=trip_title, destination=destination_name)
+    party_size = trip['party_size']
+    new_trip = Trip.objects.create(creator=user, title=trip_title, destination=destination_name, party_size=party_size, price=price)
     print('initial create success')
     new_trip.members.add(user)
     print('added members')
     new_trip.save()
-
-    # Get the flights
-    flight = get_flight(flights_service, trip)
 
     # add outbound flight
     departure_time = convert_to_datetime(flight['Legs']['outbound']['Departure'])

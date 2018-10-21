@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
 
@@ -13,6 +14,8 @@ class Trip(models.Model):
     unique_id = models.UUIDField(default=uuid.uuid4, editable=False,
                                  unique=True)
     destination = models.CharField(max_length=100)
+    party_size = models.IntegerField()
+    price = models.DecimalField(max_digits=12, decimal_places=2)
 
     def __str__(self):
         return self.title
@@ -58,7 +61,6 @@ class ItineraryItem(models.Model):
 
 
 class Flight(ItineraryItem):
-    time = models.DateTimeField()
     departs_from = models.CharField(max_length=100)
     destination = models.CharField(max_length=100)
 
@@ -69,6 +71,16 @@ class Visit(ItineraryItem):
 
     def get_directions_link(self):
         return f"https://www.google.com/maps/dir/?api=1&origin={self.trip.destination}&destination={self.full_address}&travelmode=transit"
+
+    def clean(self):
+        fly_out_time = self.trip.get_initial_flight().leaving_time
+        fly_back_time = self.trip.get_return_flight().arrival_time
+        if self.arrival_time < fly_out_time:
+            raise ValidationError(
+                'The arrival time must be later than the flight out')
+        if self.leaving_time > fly_back_time:
+            raise ValidationError(
+                'The leaving time must be earlier than the return flight')
 
 
 class Note(ItineraryItem):

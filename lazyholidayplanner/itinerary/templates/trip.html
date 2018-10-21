@@ -14,6 +14,23 @@
 {% endblock %}
 
 {% block content %}
+<!-- Handle points of interest -->
+{% if landmarks is not None %}
+<h3>Need some suggestions? Check out these places!</h3>
+<div class="card-deck">
+  {% for landmark in landmarks %}
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{landmark.location}}</h5>
+      <h6 class="card-text"><i class="fas fa-star"></i> {{landmark.rating}}</h6>
+      <h6 class="card-subtitle text-muted">{{landmark.full_address}}</h6>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+
 <div class="my-4">
   <div class="row">
     {% if object.get_initial_flight is None %}
@@ -32,16 +49,23 @@
     </div>
   </div>
   {% for schedule_item in schedule_items %}
-  <div class="schedule-item">
+  <div class="row">
+    <div class="schedule-spacer col-12"></div>
+  </div>
+  <div class="row">
     <div class="schedule-item col-10">
       <h4>{{schedule_item.location}}</h4>
-      <h5 class="lighter-text">Address: {{schedule_item.full_address}}</h5>
+      <h5 class="lighter-text">Address: {{schedule_item.full_address}} | <a target="_blank" class="directions-link"
+          href="{{schedule_item.get_directions_link}}"><i class="fas fa-map-marker-alt"></i> Navigate to</a></h5>
       <h5 class="lighter-text">Time there: {{schedule_item.arrival_time}} - {{schedule_item.leaving_time}}</h5>
       <h5>Added by {{schedule_item.created_by.username}}</h5>
     </div>
     <div class="col-2 schedule-buttons">
       <a class="btn btn-danger m-*-auto">X</a>
     </div>
+  </div>
+  <div class="row">
+    <div class="schedule-spacer col-12"></div>
   </div>
   {% endfor %}
   <div class="row">

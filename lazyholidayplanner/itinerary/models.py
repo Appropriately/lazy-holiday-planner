@@ -67,6 +67,9 @@ class Visit(ItineraryItem):
     location = models.CharField(max_length=100)
     full_address = models.CharField(max_length=200)
 
+    def get_directions_link(self):
+        return f"https://www.google.com/maps/dir/?api=1&origin={self.trip.destination}&destination={self.full_address}&travelmode=transit"
+
 
 class Note(ItineraryItem):
     text = models.CharField(max_length=500)

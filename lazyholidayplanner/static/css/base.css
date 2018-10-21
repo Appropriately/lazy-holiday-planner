@@ -55,6 +55,11 @@ form {
     text-shadow: 1px 1px black;
 }
 
+.hero-centered-text h4 {
+    text-shadow: 1px 1px black;
+}
+
+
 .provider {
     width: 400px;
     height: auto;

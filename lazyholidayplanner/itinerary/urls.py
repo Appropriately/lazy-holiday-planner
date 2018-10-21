@@ -8,4 +8,6 @@ urlpatterns = [
     path('<slug>/', TripDetailView.as_view(), name='trip_detail'),
     path('full', TripFullView.as_view(),
          name='trip_full'),
+    path('delete/<part_id>/<slug:slug>/', views.delete, name='delete_view'),
+
 ]

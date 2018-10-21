@@ -32,6 +32,7 @@
 {% endif %}
 
 <!-- Hotel details here -->
+<!--
 <div class="my-4">
   <h3>Where you'll be staying</h3>
   <div class="row">
@@ -47,6 +48,28 @@
     </div>
     {% endif %}
     <div class="col-2 schedule-buttons">
+    </div>
+  </div>
+</div>
+-->
+
+<!-- Flight details here -->
+<div class="my-4">
+  <h3>Buy your tickets now</h3>
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-3">
+          <img class="flight-supplier" src="http://placehold.it/300x200" />
+        </div>
+        <div class="col-3 p-3">
+          <h4><i class="fas fa-money-bill-wave-alt"></i> £{{object.price}}</h4></h4>
+          <a href="{{object.purchase_url}}" class="btn btn-primary"><i class="fas fa-shopping-cart"></i> Buy tickets</a>
+        </div>
+        <div class="col-6 p-2">
+          <p class="text-muted">You'll be sent to the flight provider's page to purchase the tickets.</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -70,6 +93,9 @@
     <div class="col-2 schedule-buttons">
     </div>
   </div>
+  <div class="row">
+    <div class="schedule-spacer col-12"></div>
+  </div>
   {% for schedule_item in schedule_items %}
   <div class="row">
     <div class="schedule-spacer col-12"></div>
@@ -88,13 +114,16 @@
       <h6 class="text-muted">Added by {{schedule_item.created_by.username}}</h6>
     </div>
     <div class="col-2 schedule-buttons">
-      <a class="btn btn-danger m-*-auto">X</a>
+      <a class="btn btn-danger m-*-auto" href="{% url "delete_view" part_id=schedule_item.id slug=object.unique_id %}"><i class="fa fa-trash"></i></a>
     </div>
   </div>
   <div class="row">
     <div class="schedule-spacer col-12"></div>
   </div>
   {% endfor %}
+  <div class="row">
+    <div class="schedule-spacer col-12"></div>
+  </div>
   <div class="row">
     {% if object.get_return_flight is None %}
     <div class="schedule-item-failure col-10">

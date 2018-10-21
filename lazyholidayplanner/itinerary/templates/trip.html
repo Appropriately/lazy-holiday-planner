@@ -32,6 +32,7 @@
 {% endif %}
 
 <!-- Hotel details here -->
+<!--
 <div class="my-4">
   <h3>Where you'll be staying</h3>
   <div class="row">
@@ -50,6 +51,7 @@
     </div>
   </div>
 </div>
+-->
 
 <!-- Itinerary -->
 <div class="my-4">
@@ -70,6 +72,9 @@
     <div class="col-2 schedule-buttons">
     </div>
   </div>
+  <div class="row">
+    <div class="schedule-spacer col-12"></div>
+  </div>
   {% for schedule_item in schedule_items %}
   <div class="row">
     <div class="schedule-spacer col-12"></div>
@@ -88,13 +93,16 @@
       <h6 class="text-muted">Added by {{schedule_item.created_by.username}}</h6>
     </div>
     <div class="col-2 schedule-buttons">
-      <a class="btn btn-danger m-*-auto">X</a>
+      <a class="btn btn-danger m-*-auto" href="{% url "delete_view" part_id=schedule_item.id slug=object.unique_id %}"><i class="fa fa-trash"></i></a>
     </div>
   </div>
   <div class="row">
     <div class="schedule-spacer col-12"></div>
   </div>
   {% endfor %}
+  <div class="row">
+    <div class="schedule-spacer col-12"></div>
+  </div>
   <div class="row">
     {% if object.get_return_flight is None %}
     <div class="schedule-item-failure col-10">

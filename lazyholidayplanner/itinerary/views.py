@@ -2,11 +2,12 @@ import random
 
 from .services import GooglePlaceService
 from django.views.generic import DetailView, CreateView
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic.base import TemplateView
+from django.contrib.auth.decorators import login_required
 from .models import Trip, Visit
 from .forms import TripAddForm
 
@@ -58,3 +59,9 @@ class TripAddView(CreateView):
 
 class TripFullView(TemplateView):
     template_name = 'trip_full.html'
+
+@login_required
+def delete(request, part_id, slug):
+    visit_to_delete = Visit.objects.get(id=part_id)
+    visit_to_delete.delete()
+    return redirect(f'/trip/{slug}')

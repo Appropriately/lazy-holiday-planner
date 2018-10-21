@@ -2,6 +2,7 @@ from .services import GooglePlaceService
 from django.views.generic import DetailView, CreateView
 from django.shortcuts import get_object_or_404
 from .models import Trip, Visit
+from .forms import TripAddForm
 
 
 class TripDetailView(DetailView):
@@ -18,15 +19,19 @@ class TripDetailView(DetailView):
 
 
 class TripAddView(CreateView):
-    model = Visit
-    fields = ['arrival_time', 'leaving_time', 'location']
+    form_class = TripAddForm
     template_name = 'visit/new.html'
 
+    def get_initial(self):
+        initial = super().get_initial()
+        initial = initial.copy()
+        initial['trip'] = Trip.objects.get(unique_id=self.kwargs['slug']).pk
+        return initial
+
     def dispatch(self, request, *args, **kwargs):
-        self.trip = get_object_or_404(Trip, unique_id=kwargs['slug'])
+        get_object_or_404(Trip, unique_id=kwargs['slug'])
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
-        form.instance.trip = self.trip
         return super(TripAddView, self).form_valid(form)

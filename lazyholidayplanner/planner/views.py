@@ -105,7 +105,9 @@ def typeform_result(request):
     party_size = trip['party_size']
     price = flight['Itineraries']['PricingOptions']['Price']
     purchase_url = flight['Itineraries']['PricingOptions']['DeeplinkUrl']
-    new_trip = Trip.objects.create(creator=user, title=trip_title, destination=destination_name, party_size=party_size, price=price, purchase_url=purchase_url)
+    providers_name = flight['Provider']['Name']
+    providers_image_url = flight['Provider']['ImageUrl']
+    new_trip = Trip.objects.create(creator=user, title=trip_title, destination=destination_name, party_size=party_size, price=price, purchase_url=purchase_url, provider_name=providers_name, provider_image_url=providers_image_url)
     print('initial create success')
     new_trip.members.add(user)
     print('added members')
@@ -244,8 +246,21 @@ def parse_flight_data(flight):
 
     flight['Locations'] = locations
 
-    # price is flight['Itineraries]['PricingOptions']['Price']
-    # purchase link is flight['Itineraries]['PricingOptions']['DeeplinkUrl']
+    agents = flight['Agents']
+    agent_id = flight['Itineraries']['PricingOptions']['Agents'][0]
+    print(agent_id)
+
+    provider = {}
+    for agent in agents:
+        if agent['Id'] == agent_id:
+            provider['Name'] = agent['Name']
+            provider['ImageUrl'] = agent['ImageUrl']
+            break
+    
+    flight['Provider'] = provider
+
+    # price is flight['Itineraries']['PricingOptions']['Price']
+    # purchase link is flight['Itineraries']['PricingOptions']['DeeplinkUrl']
     # time is flight['Legs']['inbound']['Departure'|'Arrival']
     # airport is flight['Locations'][LOCATION_NAME]
     # where LOCATION_NAME = 'outbound|inbound_origin|destination'

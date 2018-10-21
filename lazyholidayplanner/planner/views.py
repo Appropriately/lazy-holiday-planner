@@ -104,7 +104,8 @@ def typeform_result(request):
     trip_title = f"{adjusted_name}'s trip to {destination_name}"
     party_size = trip['party_size']
     price = flight['Itineraries']['PricingOptions']['Price']
-    new_trip = Trip.objects.create(creator=user, title=trip_title, destination=destination_name, party_size=party_size, price=price)
+    purchase_url = flight['Itineraries']['PricingOptions']['DeeplinkUrl']
+    new_trip = Trip.objects.create(creator=user, title=trip_title, destination=destination_name, party_size=party_size, price=price, purchase_url=purchase_url)
     print('initial create success')
     new_trip.members.add(user)
     print('added members')
@@ -243,7 +244,8 @@ def parse_flight_data(flight):
 
     flight['Locations'] = locations
 
-    # price is flight['Itineraries][0]['PricingOptions']['Price']
+    # price is flight['Itineraries]['PricingOptions']['Price']
+    # purchase link is flight['Itineraries]['PricingOptions']['DeeplinkUrl']
     # time is flight['Legs']['inbound']['Departure'|'Arrival']
     # airport is flight['Locations'][LOCATION_NAME]
     # where LOCATION_NAME = 'outbound|inbound_origin|destination'

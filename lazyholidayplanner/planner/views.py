@@ -23,9 +23,15 @@ def index(request):
     user_trips = Trip.objects.filter(Q(creator=current_user) | Q(members=current_user)).distinct()
     if not user_trips.exists():
         user_trips = None
+        
+    if current_user.first_name is not "":
+        adjusted_name = current_user.first_name
+    else:
+        adjusted_name = f"{current_user.username[0].upper()}{current_user.username[1:]}"
 
     return render(request, 'planner/index.html',  {
         'user_trips': user_trips,
+        'name': adjusted_name,
     })
 
 @login_required
@@ -89,6 +95,12 @@ def typeform_result(request):
     # Create the trip
     print('Gets to create trip')
     destination_name = destination_locations['Places'][0]['PlaceName']
+
+    if user.first_name is not "":
+        adjusted_name = user.first_name
+    else:
+        adjusted_name = f"{username[0].upper()}{username[1:]}"
+
     adjusted_name = user.first_name if user.first_name is not None else f"{username[0]}{username[1:]}"
     trip_title = f"{adjusted_name}'s trip to {destination_name}"
     party_size = trip['party_size']

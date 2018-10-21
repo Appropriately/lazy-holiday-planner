@@ -101,7 +101,6 @@ def typeform_result(request):
     else:
         adjusted_name = f"{username[0].upper()}{username[1:]}"
 
-    adjusted_name = user.first_name if user.first_name is not None else f"{username[0]}{username[1:]}"
     trip_title = f"{adjusted_name}'s trip to {destination_name}"
     party_size = trip['party_size']
     price = flight['Itineraries']['PricingOptions']['Price']

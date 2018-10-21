@@ -31,14 +31,14 @@ class Trip(models.Model):
 
     def get_initial_flight(self):
         flights = Flight.objects.filter(trip=self).order_by('leaving_time')
-        if flights is None:
+        if flights is not None:
             return flights.first()
         else:
             return None
 
     def get_return_flight(self):
         flights = Flight.objects.filter(trip=self).order_by('-arrival_time')
-        if flights is None:
+        if flights is not None:
             return flights.first()
         else:
             return None
@@ -73,8 +73,8 @@ class Visit(ItineraryItem):
         return f"https://www.google.com/maps/dir/?api=1&origin={self.trip.destination}&destination={self.full_address}&travelmode=transit"
 
     def clean(self):
-        fly_out_time = self.trip.get_initial_flight().leaving_time
-        fly_back_time = self.trip.get_return_flight().arrival_time
+        fly_out_time = self.trip.get_initial_flight().arrival_time
+        fly_back_time = self.trip.get_return_flight().leaving_time
         if self.arrival_time < fly_out_time:
             raise ValidationError(
                 'The arrival time must be later than the flight out')

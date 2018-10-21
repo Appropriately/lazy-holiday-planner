@@ -4,6 +4,9 @@ from .services import GooglePlaceService
 from django.views.generic import DetailView, CreateView
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.views.generic.base import TemplateView
 from .models import Trip, Visit
 from .forms import TripAddForm
 
@@ -15,8 +18,13 @@ class TripDetailView(LoginRequiredMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         result = super().get(request, *args, **kwargs)
-        self.object.members.add(request.user)
-        return result
+        members = self.object.members.all()
+        max_party_size = self.object.party_size
+        if request.user in members or len(members) < max_party_size:
+            self.object.members.add(request.user)
+            return result
+        else:
+            return HttpResponseRedirect(reverse('trip_full'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -46,3 +54,7 @@ class TripAddView(CreateView):
         search_term = f"{form.instance.location} near {form.instance.trip.destination}"
         form.instance.full_address = GooglePlaceService.get_full_address(search_term)
         return super(TripAddView, self).form_valid(form)
+
+
+class TripFullView(TemplateView):
+    template_name = 'trip_full.html'

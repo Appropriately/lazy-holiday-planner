@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from itinerary.models import Trip, ItineraryItem, Flight
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from skyscanner.skyscanner import Flights
+from skyscanner.skyscanner import Flights, Hotels
 
 # Create your views here.
 def index(request):
@@ -126,6 +126,13 @@ def typeform_result(request):
     arrival_location = flight['Locations']['inbound_destination']
     inbound_flight = Flight.objects.create(trip=new_trip, created_by=user, leaving_time=departure_time, arrival_time=arrival_time, departs_from=departure_location, destination=arrival_location)
     inbound_flight.save()
+
+    # hotels_service = get_hotels_service()
+    # # get location entity id for given location
+    # hotel_location = get_hotel_suggested_location(hotels_service, trip['destination_location'])
+    # entity_id = hotel_location['id']
+
+    # hotel = get_hotel(hotels_service, entity_id, party_size, trip['start_date'], trip['end_date'], parse_sort_method(query_answers[5]['choice']['label']))
 
     print(data)
     return HttpResponse(status=200, content="Trip added")
@@ -254,3 +261,33 @@ def parse_location_name(location):
 
 def convert_to_datetime(flight_datetime):
     return datetime.datetime.strptime(flight_datetime, '%Y-%m-%dT%H:%M:%S')
+
+def get_hotels_service():
+    keys = get_keys()
+    return Hotels(keys[2])
+
+def get_hotel_suggested_location(hotels_service, location, market='UK', currency='GBP', locale='en-UK'):
+    full_location_name = location['PlaceName']
+    if not (location['PlaceName'] == location['CountryName']):
+        full_location_name += ", " + location['CountryName']
+
+    response = hotels_service.make_request(f'http://gateway.skyscanner.net/autosuggest/v3/hotels?q={full_location_name}&market={market}&locale={locale}&currency={currency}')
+    suggested_location = json.loads(response.text)
+
+    return suggested_location['results'][0]
+
+def get_hotel(hotels_service, entity_id, num_of_guests, check_in_date, check_out_date, sort_method, market='UK', currency='GBP', locale='en-UK'):
+    num_of_rooms = int((num_of_guests + 1) / 2)
+    headers = {'x-user-agent': 'D;B2B'}
+    url = f'http://gateway.skyscanner.net/hotels/v1/prices/search/entity/{entity_id}?market={market}&locale={locale}&checkin_date={check_in_date}&checkout_date={check_out_date}&currency={currency}&adults={num_of_guests}&rooms={num_of_rooms}&sort={sort_method}'
+    response = hotels_service.make_request(url, headers=headers)
+    result = json.loads(response.text)
+    return result
+
+def parse_sort_method(budget_type):
+    budget_options = {
+        'No money': "price",
+        'Doing okay': "-rating",
+        'Big money': "-price"
+    }
+    return budget_options[budget_type]

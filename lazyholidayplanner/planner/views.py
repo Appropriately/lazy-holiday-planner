@@ -80,13 +80,15 @@ def typeform_result(request):
 
     # Get the flights and price
     flight = get_flight(flights_service, trip)
-    price = flight['Itineraries'][0]['PricingOptions']['Price']
-    
+    if not flight:
+        return HttpResponse(status=500, content="No flights found")
+
     # Create the trip
     print('Gets to create trip')
     destination_name = destination_locations['Places'][0]['PlaceName']
     trip_title = f"{username}'s trip to {destination_name}"
     party_size = trip['party_size']
+    price = flight['Itineraries']['PricingOptions']['Price']
     new_trip = Trip.objects.create(creator=user, title=trip_title, destination=destination_name, party_size=party_size, price=price)
     print('initial create success')
     new_trip.members.add(user)
@@ -98,7 +100,7 @@ def typeform_result(request):
     arrival_time = convert_to_datetime(flight['Legs']['outbound']['Arrival'])
     departure_location = flight['Locations']['outbound_origin']
     arrival_location = flight['Locations']['outbound_destination']
-    outbound_flight = Flight.objects.create(trip=new_trip, created_by=user, leaving_time=departure_time, arrival_time=arrival_time, deaprts_from=departure_location, destination=arrival_location)
+    outbound_flight = Flight.objects.create(trip=new_trip, created_by=user, leaving_time=departure_time, arrival_time=arrival_time, departs_from=departure_location, destination=arrival_location)
     outbound_flight.save()
 
     # add returning flight
@@ -108,7 +110,6 @@ def typeform_result(request):
     arrival_location = flight['Locations']['inbound_destination']
     inbound_flight = Flight.objects.create(trip=new_trip, created_by=user, leaving_time=departure_time, arrival_time=arrival_time, departs_from=departure_location, destination=arrival_location)
     inbound_flight.save()
-
 
     print(data)
     return HttpResponse(status=200, content="Trip added")
@@ -170,6 +171,9 @@ def get_flight(flights_service, trip, country='UK', currency='GBP', locale='en-G
     flights = poll_results(flights_service, session_key, 'price', 'asc')
     itineraries = flights['Itineraries']
 
+    if not itineraries:
+        return False
+
     cheapest_leg = itineraries[0]
     for leg in itineraries:
         if leg['PricingOptions'][0]['Price'] < cheapest_leg['PricingOptions'][0]['Price']:
@@ -186,8 +190,8 @@ def poll_results(flights_service, session_key, sort_type='price', sort_order='as
 
 def parse_flight_data(flight):
     legs = flight['Legs']
-    outbound_leg_id = flight['Itineraries'][0]['OutboundLegId']
-    inbound_leg_id = flight['Itineraries'][0]['InboundLegId']
+    outbound_leg_id = flight['Itineraries']['OutboundLegId']
+    inbound_leg_id = flight['Itineraries']['InboundLegId']
 
     final_legs = {}
     for leg in legs:

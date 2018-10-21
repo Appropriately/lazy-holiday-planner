@@ -17,6 +17,8 @@ class Trip(models.Model):
     party_size = models.IntegerField()
     price = models.DecimalField(max_digits=12, decimal_places=2)
     purchase_url = models.CharField(max_length=2000)
+    provider_name = models.CharField(max_length=100)
+    provider_image_url = models.CharField(max_length=500)
 
     def __str__(self):
         return self.title

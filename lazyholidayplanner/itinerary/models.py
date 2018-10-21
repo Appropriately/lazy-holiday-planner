@@ -44,10 +44,10 @@ class Trip(models.Model):
             return None
 
     def get_start_date(self):
-        return  self.get_initial_flight().leaving_time if self.get_initial_flight() is not None else "NO FLIGHT DATA"
+        return "NO DATA" if self.get_initial_flight() is None else self.get_initial_flight().leaving_time
 
     def get_end_date(self):
-        return self.get_return_flight().leaving_time if self.get_return_flight() is not None else "NO FLIGHT DATA"
+        return "NO DATA" if self.get_return_flight() is None else self.get_return_flight().arrival_time
 
 
 class ItineraryItem(models.Model):

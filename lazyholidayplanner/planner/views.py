@@ -88,8 +88,25 @@ def typeform_result(request):
     print('added members')
     new_trip.save()
 
-    # Create the flight
-    # flight = get_flight(flights_service, trip)#
+    # Get the flights
+    flight = get_flight(flights_service, trip)
+
+    # add outbound flight
+    departure_time = convert_to_datetime(flight['Legs']['outbound']['Departure'])
+    arrival_time = convert_to_datetime(flight['Legs']['outbound']['Arrival'])
+    departure_location = flight['Locations']['outbound_origin']
+    arrival_location = flight['Locations']['outbound_destination']
+    outbound_flight = Flight.objects.create(trip=new_trip, created_by=user, leaving_time=departure_time, arrival_time=arrival_time, deaprts_from=departure_location, destination=arrival_location)
+    outbound_flight.save()
+
+    # add returning flight
+    departure_time = convert_to_datetime(flight['Legs']['inbound']['Departure'])
+    arrival_time = convert_to_datetime(flight['Legs']['inbound']['Arrival'])
+    departure_location = flight['Locations']['inbound_origin']
+    arrival_location = flight['Locations']['inbound_destination']
+    inbound_flight = Flight.objects.create(trip=new_trip, created_by=user, leaving_time=departure_time, arrival_time=arrival_time, departs_from=departure_location, destination=arrival_location)
+    inbound_flight.save()
+
 
     print(data)
     return HttpResponse(status=200, content="Trip added")
@@ -157,9 +174,61 @@ def get_flight(flights_service, trip, country='UK', currency='GBP', locale='en-G
             cheapest_leg = leg
             
     cheapest_leg['PricingOptions'] = cheapest_leg['PricingOptions'][0]
+    flights['Itineraries'] = cheapest_leg
 
-    return cheapest_leg
+    return parse_flight_data(flights)
 
 def poll_results(flights_service, session_key, sort_type='price', sort_order='asc'):
     flights_response = flights_service.make_request(f'http://partners.api.skyscanner.net/apiservices/pricing/uk1/v1.0/{session_key}?stops=0&sortType={sort_type}&sortOrder={sort_order}')
     return json.loads(flights_response.text)
+
+def parse_flight_data(flight):
+    legs = flight['Legs']
+    outbound_leg_id = flight['Itineraries'][0]['OutboundLegId']
+    inbound_leg_id = flight['Itineraries'][0]['InboundLegId']
+
+    final_legs = {}
+    for leg in legs:
+        if leg['Id'] == outbound_leg_id:
+            final_legs['outbound'] = leg
+        if leg['Id'] == inbound_leg_id:
+            final_legs['inbound'] = leg
+
+    flight['Legs'] = final_legs
+
+    places = flight['Places']
+    outbound_origin_id = final_legs['outbound']['OriginStation']
+    outbound_destination_id = final_legs['outbound']['DestinationStation']
+    inbound_origin_id = final_legs['inbound']['OriginStation']
+    inbound_destination_id = final_legs['inbound']['DestinationStation']
+
+    locations = {}
+    for place in places:
+        if place['Id'] == outbound_origin_id:
+            locations['outbound_origin'] = parse_location_name(place)
+        if place['Id'] == outbound_destination_id:
+            locations['outbound_destination'] = parse_location_name(place)
+        if place['Id'] == inbound_origin_id:
+            locations['inbound_origin'] = parse_location_name(place)
+        if place['Id'] == inbound_destination_id:
+            locations['inbound_destination'] = parse_location_name(place)
+
+    flight['Locations'] = locations
+
+    # price is flight['Itineraries][0]['PricingOptions']['Price']
+    # time is flight['Legs']['inbound']['Departure'|'Arrival']
+    # airport is flight['Locations'][LOCATION_NAME]
+    # where LOCATION_NAME = 'outbound|inbound_origin|destination'
+    return flight
+
+def parse_location_name(location):
+    name = ''
+    if location['Type'] == 'Airport':
+        name += location['Name'] + ' Airport'
+    if location['Type'] == 'City':
+        name += location['Name']
+
+    return name
+
+def convert_to_datetime(flight_datetime):
+    return datetime.datetime.strptime(flight_datetime, '%Y-%m-%dT%H:%M:%S')

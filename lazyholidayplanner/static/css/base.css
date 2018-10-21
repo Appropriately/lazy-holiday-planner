@@ -77,6 +77,13 @@ form {
     border-left: 2px solid black;
 }
 
+.schedule-spacer {
+    margin: 0;
+    padding: 10px;
+    height: 30px;
+    border-left: 2px dashed black;
+}
+
 .schedule-item-failure {
     margin: 0;
     padding: 10px;
@@ -93,8 +100,13 @@ form {
 .schedule-buttons .btn {
     margin:0 auto;
     display:block;
+    color: white !important;
 }
 
 .lighter-text {
     color:#666666 !important; 
+}
+
+.directions-link {
+    color: black !important;
 }

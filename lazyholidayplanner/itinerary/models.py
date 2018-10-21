@@ -69,6 +69,9 @@ class Visit(ItineraryItem):
     location = models.CharField(max_length=100)
     full_address = models.CharField(max_length=200)
 
+    def get_directions_link(self):
+        return f"https://www.google.com/maps/dir/?api=1&origin={self.trip.destination}&destination={self.full_address}&travelmode=transit"
+
     def clean(self):
         fly_out_time = self.trip.get_initial_flight().leaving_time
         fly_back_time = self.trip.get_return_flight().arrival_time

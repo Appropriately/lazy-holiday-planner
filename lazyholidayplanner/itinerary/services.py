@@ -5,6 +5,7 @@ from django.conf import settings
 from django.templatetags.static import static
 import os
 import googlemaps
+import re
 
 _client = googlemaps.Client(settings.GOOGLE_PLACES_API_KEY)
 
@@ -54,3 +55,27 @@ class GooglePlaceService:
             except (IndexError, IOError):
                 return static('images/manchester.jpeg')
         return cls._get_photo_url(place_name)
+
+    @classmethod
+    def get_full_address(cls, short_address):
+        result = _client.geocode(short_address)[0]['formatted_address']
+        return result
+
+    @classmethod
+    def get_landmarks(cls, location):
+        """
+        Returns an organised dictionary of local landmarks
+        :param location: a location to search around 
+        :return: a dictionary of landmarks
+        """
+
+        def construct_dictionary(location, full_address, rating):
+            return {'location': location, 'full_address': full_address, 'rating': rating}
+
+        query = _client.places(query=f"{location} point of interest")
+        output = []
+        for result in query['results']:
+            output.append(construct_dictionary(result['name'], result['formatted_address'], result['rating']))
+
+        return output
+

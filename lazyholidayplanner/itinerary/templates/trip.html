@@ -23,16 +23,37 @@
   <div class="card">
     <div class="card-body">
       <h5 class="card-title">{{landmark.location}}</h5>
-      <h6 class="card-text"><i class="fas fa-star"></i> {{landmark.rating}}</h6>
-      <h6 class="card-subtitle text-muted">{{landmark.full_address}}</h6>
+      <h6 class="card-text text-muted" style="color:black !important;"><i class="fas fa-star"></i> {{landmark.rating}}</h6>
+      <h6 class="card-text text-muted"><i class="fas fa-map-marker-alt"></i> {{landmark.full_address}}</h6>
     </div>
   </div>
   {% endfor %}
 </div>
 {% endif %}
 
-
+<!-- Hotel details here -->
 <div class="my-4">
+  <h3>Where you'll be staying</h3>
+  <div class="row">
+    {% if object.get_initial_flight is None %}
+    <div class="schedule-item-failure col-10">
+      <h4><i class="fas fa-hotel"></i> Error with Accomodation</h4>
+    </div>
+    {% else %}
+    <div class="schedule-item col-10">
+      <h4><i class="fas fa-hotel"></i> </h4>
+      <h5 class="text-muted">Address:</h5>
+      <h6 class="text-muted">Added by {{object.get_initial_flight.created_by.username}}</h6>
+    </div>
+    {% endif %}
+    <div class="col-2 schedule-buttons">
+    </div>
+  </div>
+</div>
+
+<!-- Itinerary -->
+<div class="my-4">
+  <h3>Your plan</h3>
   <div class="row">
     {% if object.get_initial_flight is None %}
     <div class="schedule-item-failure col-10">
@@ -56,8 +77,13 @@
   <div class="row">
     <div class="schedule-item col-10">
       <h4>{{schedule_item.location}}</h4>
-      <h5 class="lighter-text">Address: {{schedule_item.full_address}} | <a target="_blank" class="directions-link"
-          href="{{schedule_item.get_directions_link}}"><i class="fas fa-map-marker-alt"></i> Navigate to</a></h5>
+      <h5 class="text-muted">
+        Address: {{schedule_item.full_address}}
+      </h5>
+      <h5 class="text-muted">
+        <a target="_blank" class="directions-link" href="{{schedule_item.get_directions_to_link}}"><i class="fas fa-map-marker-alt"></i> Navigate to</a> | 
+        <a target="_blank" class="directions-link" href="{{schedule_item.get_directions_from_link}}"><i class="fas fa-map-marker-alt"></i> Navigate from</a>
+      </h5>
       <h5 class="text-muted">Time there: {{schedule_item.arrival_time}} - {{schedule_item.leaving_time}}</h5>
       <h6 class="text-muted">Added by {{schedule_item.created_by.username}}</h6>
     </div>

@@ -16,7 +16,7 @@ class TripDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['hero_img_url'] = GooglePlaceService.get_photo(
             context['object'].destination)
-        context['schedule_items'] = Visit.objects.filter(trip=context['object'])
+        context['schedule_items'] = Visit.objects.filter(trip=context['object']).order_by('arrival_time')
         context['landmarks'] = random.sample(GooglePlaceService.get_landmarks(context['object'].destination),3)
         return context
 
@@ -37,7 +37,6 @@ class TripAddView(CreateView):
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
-        form.instance.trip = self.trip
-        search_term = f"{form.instance.location} near {self.trip.destination}"
+        search_term = f"{form.instance.location} near {form.instance.trip.destination}"
         form.instance.full_address = GooglePlaceService.get_full_address(search_term)
         return super(TripAddView, self).form_valid(form)

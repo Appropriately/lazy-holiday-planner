@@ -8,6 +8,7 @@
     <div class="col">
       <h1>{{object.title}}</h1>
       <h3>{{object.attendees}}</h3>
+      <h4><i class="fas fa-users"></i> {{object.party_size}} | <i class="fas fa-money-bill-wave-alt"></i> £{{object.price}}</h4>
     </div>
   </div>
 </div>
@@ -22,16 +23,37 @@
   <div class="card">
     <div class="card-body">
       <h5 class="card-title">{{landmark.location}}</h5>
-      <h6 class="card-text"><i class="fas fa-star"></i> {{landmark.rating}}</h6>
-      <h6 class="card-subtitle text-muted">{{landmark.full_address}}</h6>
+      <h6 class="card-text text-muted" style="color:black !important;"><i class="fas fa-star"></i> {{landmark.rating}}</h6>
+      <h6 class="card-text text-muted"><i class="fas fa-map-marker-alt"></i> {{landmark.full_address}}</h6>
     </div>
   </div>
   {% endfor %}
 </div>
 {% endif %}
 
-
+<!-- Hotel details here -->
 <div class="my-4">
+  <h3>Where you'll be staying</h3>
+  <div class="row">
+    {% if object.get_initial_flight is None %}
+    <div class="schedule-item-failure col-10">
+      <h4><i class="fas fa-hotel"></i> Error with Accomodation</h4>
+    </div>
+    {% else %}
+    <div class="schedule-item col-10">
+      <h4><i class="fas fa-hotel"></i> </h4>
+      <h5 class="text-muted">Address:</h5>
+      <h6 class="text-muted">Added by {{object.get_initial_flight.created_by.username}}</h6>
+    </div>
+    {% endif %}
+    <div class="col-2 schedule-buttons">
+    </div>
+  </div>
+</div>
+
+<!-- Itinerary -->
+<div class="my-4">
+  <h3>Your plan</h3>
   <div class="row">
     {% if object.get_initial_flight is None %}
     <div class="schedule-item-failure col-10">
@@ -40,9 +62,9 @@
     {% else %}
     <div class="schedule-item col-10">
       <h4><i class="fas fa-plane-departure"></i> Flight to {{object.get_initial_flight.destination}}</h4>
-      <h5 class="lighter-text">Takeoff: {{object.get_initial_flight.arrival_time}}, Lands:
+      <h5 class="text-muted">Takeoff: {{object.get_initial_flight.arrival_time}}, Lands:
         {{object.get_initial_flight.leaving_time}}</h5>
-      <h5>Added by {{object.get_initial_flight.created_by.username}}</h5>
+      <h6 class="text-muted">Added by {{object.get_initial_flight.created_by.username}}</h6>
     </div>
     {% endif %}
     <div class="col-2 schedule-buttons">
@@ -55,10 +77,15 @@
   <div class="row">
     <div class="schedule-item col-10">
       <h4>{{schedule_item.location}}</h4>
-      <h5 class="lighter-text">Address: {{schedule_item.full_address}} | <a target="_blank" class="directions-link"
-          href="{{schedule_item.get_directions_link}}"><i class="fas fa-map-marker-alt"></i> Navigate to</a></h5>
-      <h5 class="lighter-text">Time there: {{schedule_item.arrival_time}} - {{schedule_item.leaving_time}}</h5>
-      <h5>Added by {{schedule_item.created_by.username}}</h5>
+      <h5 class="text-muted">
+        Address: {{schedule_item.full_address}}
+      </h5>
+      <h5 class="text-muted">
+        <a target="_blank" class="directions-link" href="{{schedule_item.get_directions_to_link}}"><i class="fas fa-map-marker-alt"></i> Navigate to</a> | 
+        <a target="_blank" class="directions-link" href="{{schedule_item.get_directions_from_link}}"><i class="fas fa-map-marker-alt"></i> Navigate from</a>
+      </h5>
+      <h5 class="text-muted">Time there: {{schedule_item.arrival_time}} - {{schedule_item.leaving_time}}</h5>
+      <h6 class="text-muted">Added by {{schedule_item.created_by.username}}</h6>
     </div>
     <div class="col-2 schedule-buttons">
       <a class="btn btn-danger m-*-auto">X</a>
@@ -76,17 +103,56 @@
     {% else %}
     <div class="schedule-item col-10">
       <h4><i class="fas fa-plane-arrival"></i> Flight to {{object.get_return_flight.destination}}</h4>
-      <h5 class="lighter-text">Takeoff: {{object.get_return_flight.arrival_time}}, Lands:
+      <h5 class="text-muted">Takeoff: {{object.get_return_flight.arrival_time}}, Lands:
         {{object.get_return_flight.leaving_time}}</h5>
-      <h5>Added by {{object.get_return_flight.created_by.username}}</h5>
+      <h6 class="text-muted">Added by {{object.get_return_flight.created_by.username}}</h6>
     </div>
     {% endif %}
     <div class="col-2 schedule-buttons">
     </div>
   </div>
 </div>
-
-
-
 <a href="/trip/{{object.unique_id}}/add" class="btn btn-primary"><i class="fas fa-plus"></i> Add to schedule</a>
+<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#shareModal">
+  <i class="fas fa-user-friends"></i> Share
+</button>
+<div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="shareModalLabel">Share this trip</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="shareLinkField">Share this link with your friends:</label>
+          <div class="input-group">
+            <input type="text" value="{{request.build_absolute_uri}}" id="shareLinkField" class="form-control" readonly>
+            <div class="input-group-append">
+              <button type="button" onclick="copyLink()" class="btn btn-primary"><i class="fas fa-copy"></i> Copy</button>
+            </div>
+          </div>
+        </div>
+        <div class="alert alert-success fade" id="copiedAlert" role="alert">
+          The link has been copied to your clipboard!
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    function copyLink() {
+      document.getElementById("shareLinkField").select();
+      document.execCommand("copy");
+      document.getElementById("copiedAlert").classList.add("show");
+    }
+  </script>
 {% endblock %}

@@ -31,23 +31,23 @@ class Trip(models.Model):
 
     def get_initial_flight(self):
         flights = Flight.objects.filter(trip=self).order_by('leaving_time')
-        if flights is None:
+        if flights is not None:
             return flights.first()
         else:
             return None
 
     def get_return_flight(self):
         flights = Flight.objects.filter(trip=self).order_by('-arrival_time')
-        if flights is None:
+        if flights is not None:
             return flights.first()
         else:
             return None
 
     def get_start_date(self):
-        return  self.get_initial_flight().leaving_time if self.get_initial_flight() is not None else "NO FLIGHT DATA"
+        return "NO DATA" if self.get_initial_flight() is None else self.get_initial_flight().leaving_time
 
     def get_end_date(self):
-        return self.get_return_flight().leaving_time if self.get_return_flight() is not None else "NO FLIGHT DATA"
+        return "NO DATA" if self.get_return_flight() is None else self.get_return_flight().arrival_time
 
 
 class ItineraryItem(models.Model):
@@ -69,12 +69,15 @@ class Visit(ItineraryItem):
     location = models.CharField(max_length=100)
     full_address = models.CharField(max_length=200)
 
-    def get_directions_link(self):
+    def get_directions_to_link(self):
         return f"https://www.google.com/maps/dir/?api=1&origin={self.trip.destination}&destination={self.full_address}&travelmode=transit"
 
+    def get_directions_from_link(self):
+        return f"https://www.google.com/maps/dir/?api=1&origin={self.full_address}&destination={self.trip.destination}&travelmode=transit"
+
     def clean(self):
-        fly_out_time = self.trip.get_initial_flight().leaving_time
-        fly_back_time = self.trip.get_return_flight().arrival_time
+        fly_out_time = self.trip.get_initial_flight().arrival_time
+        fly_back_time = self.trip.get_return_flight().leaving_time
         if self.arrival_time < fly_out_time:
             raise ValidationError(
                 'The arrival time must be later than the flight out')

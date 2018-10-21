@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic.base import TemplateView
+import datetime
 from django.contrib.auth.decorators import login_required
 from .models import Trip, Visit
 from .forms import TripAddForm
@@ -31,8 +32,10 @@ class TripDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['hero_img_url'] = GooglePlaceService.get_photo(
             context['object'].destination)
-        context['schedule_items'] = Visit.objects.filter(trip=context['object']).order_by('arrival_time')
-        context['landmarks'] = random.sample(GooglePlaceService.get_landmarks(context['object'].destination),3)
+        context['schedule_items'] = Visit.objects.filter(
+            trip=context['object']).order_by('arrival_time')
+        context['landmarks'] = random.sample(
+            GooglePlaceService.get_landmarks(context['object'].destination), 3)
         return context
 
 
@@ -43,7 +46,16 @@ class TripAddView(CreateView):
     def get_initial(self):
         initial = super().get_initial()
         initial = initial.copy()
-        initial['trip'] = Trip.objects.get(unique_id=self.kwargs['slug']).pk
+        trip = Trip.objects.get(unique_id=self.kwargs['slug'])
+        initial['trip'] = trip.pk
+        get_params = self.request.GET
+        initial['location'] = get_params.get('location')
+        now = datetime.datetime.now(datetime.timezone.utc)
+        initial['arrival_time'] = get_params.get('arrival_time') \
+                                  or now
+        later = initial['arrival_time'] + datetime.timedelta(hours=2)
+        initial['leaving_time'] = get_params.get('leaving_time') \
+                                  or later
         return initial
 
     def dispatch(self, request, *args, **kwargs):
@@ -52,9 +64,17 @@ class TripAddView(CreateView):
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
-        search_term = f"{form.instance.location} near {form.instance.trip.destination}"
-        form.instance.full_address = GooglePlaceService.get_full_address(search_term)
+        location = form.instance.location
+        destination = form.instance.trip.destination
+        search_term = f"{location} near {destination}"
+        form.instance.full_address = GooglePlaceService.get_full_address(
+            search_term)
         return super(TripAddView, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['trip_slug'] = self.kwargs.get('slug')
+        return context
 
 
 class TripFullView(TemplateView):

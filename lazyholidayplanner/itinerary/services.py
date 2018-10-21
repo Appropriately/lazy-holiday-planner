@@ -5,7 +5,6 @@ from django.conf import settings
 from django.templatetags.static import static
 import os
 import googlemaps
-import re
 
 _client = googlemaps.Client(settings.GOOGLE_PLACES_API_KEY)
 

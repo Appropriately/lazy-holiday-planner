@@ -10,7 +10,7 @@
     {% csrf_token %}
     {{ form|crispy }}
     <input type="submit" value="Add" class="btn btn-primary" />
-    <a href="/" class="btn btn-secondary ml-2">Cancel</a>
+    <a href="{% url 'trip_detail' slug=trip_slug %}" class="btn btn-secondary ml-2">Cancel</a>
 </form>
 {% else %}
 

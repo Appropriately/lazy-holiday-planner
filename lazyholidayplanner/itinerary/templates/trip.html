@@ -25,6 +25,9 @@
       <h5 class="card-title">{{landmark.location}}</h5>
       <h6 class="card-text text-muted" style="color:black !important;"><i class="fas fa-star"></i> {{landmark.rating}}</h6>
       <h6 class="card-text text-muted"><i class="fas fa-map-marker-alt"></i> {{landmark.full_address}}</h6>
+      <a href="{% url 'trip_schedule' slug=object.unique_id %}?location={{landmark.location}}" class="btn btn-sm btn-outline-secondary">
+        <i class="fas fa-plus"></i> Add to plan
+      </a>
     </div>
   </div>
   {% endfor %}

@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from datetime import datetime, timedelta, timezone
 
 
 class Trip(models.Model):

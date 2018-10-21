@@ -32,6 +32,9 @@ def index(request):
 def new(request):
     return render(request, 'planner/new.html')
 
+def wait(request):
+    return render(request, 'planner/wait.html')
+
 """
 Webhook for handling information submitted to typeform. The url is '.../api/typeform'
 """

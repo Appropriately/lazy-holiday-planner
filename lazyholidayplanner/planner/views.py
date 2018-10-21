@@ -86,7 +86,8 @@ def typeform_result(request):
     # Create the trip
     print('Gets to create trip')
     destination_name = destination_locations['Places'][0]['PlaceName']
-    trip_title = f"{username}'s trip to {destination_name}"
+    adjusted_name = user.first_name if user.first_name is not None else f"{username[0]}{username[1:]}"
+    trip_title = f"{adjusted_name}'s trip to {destination_name}"
     party_size = trip['party_size']
     price = flight['Itineraries']['PricingOptions']['Price']
     new_trip = Trip.objects.create(creator=user, title=trip_title, destination=destination_name, party_size=party_size, price=price)

@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
 
@@ -58,7 +59,6 @@ class ItineraryItem(models.Model):
 
 
 class Flight(ItineraryItem):
-    time = models.DateTimeField()
     departs_from = models.CharField(max_length=100)
     destination = models.CharField(max_length=100)
 
@@ -66,6 +66,16 @@ class Flight(ItineraryItem):
 class Visit(ItineraryItem):
     location = models.CharField(max_length=100)
     full_address = models.CharField(max_length=200)
+
+    def clean(self):
+        fly_out_time = self.trip.get_initial_flight().leaving_time
+        fly_back_time = self.trip.get_return_flight().arrival_time
+        if self.arrival_time < fly_out_time:
+            raise ValidationError(
+                'The arrival time must be later than the flight out')
+        if self.leaving_time > fly_back_time:
+            raise ValidationError(
+                'The leaving time must be earlier than the return flight')
 
 
 class Note(ItineraryItem):

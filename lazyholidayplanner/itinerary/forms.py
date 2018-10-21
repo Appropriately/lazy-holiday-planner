@@ -1,5 +1,5 @@
 from django import forms
-from .models import Visit
+from .models import Visit, Trip
 from datetime import datetime, timezone
 
 
@@ -20,10 +20,11 @@ class TripAddForm(forms.ModelForm):
 
     class Meta:
         model = Visit
-        fields = ['arrival_time', 'leaving_time', 'location']
+        fields = ['arrival_time', 'leaving_time', 'location', 'trip']
         widgets = {
             'arrival_time': forms.DateTimeInput(
-                attrs={'placeholder': 'yyyy/mm/dd hh:MM'}),
+                attrs={'placeholder': 'mm/dd/yyyy hh:MM'}),
             'leaving_time': forms.DateTimeInput(
-                attrs={'placeholder': 'yyyy/mm/dd hh:MM'}),
+                attrs={'placeholder': 'mm/dd/yyyy hh:MM'}),
+            'trip': forms.HiddenInput(),
         }

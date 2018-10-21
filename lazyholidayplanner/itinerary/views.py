@@ -3,14 +3,20 @@ import random
 from .services import GooglePlaceService
 from django.views.generic import DetailView, CreateView
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Trip, Visit
 from .forms import TripAddForm
 
 
-class TripDetailView(DetailView):
+class TripDetailView(LoginRequiredMixin, DetailView):
     model = Trip
     template_name = 'trip.html'
     slug_field = 'unique_id'
+
+    def get(self, request, *args, **kwargs):
+        result = super().get(request, *args, **kwargs)
+        self.object.members.add(request.user)
+        return result
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
